@@ -2,28 +2,27 @@
 
 if [[ "${1-}" =~ ^-*h(elp)?$ ]]; then
     echo 'Usage: ./open_project.sh workspace_dir
-'
+    '
     exit
 fi
 
 main() {
-	workspace_dir=$1
-	full_projects=""
-	workspaces=`ls -D -1 $workspace_dir`
-	for workspace in $workspaces
-	do
-	    groups=`ls -D -1 $workspace_dir/$workspace`
-	    for group in $groups
-	    do
-		projects=`ls -D -1 $workspace_dir/$workspace/$group`
-		for project in $projects
-		do
-		    full_projects=`echo "$workspace/$group/$project;$full_projects"`
-		done
-	    done
-	done
-	selected_project=`echo $full_projects | awk -v RS='[;]' '{print $0}' | fzf`
-	echo $selected_project
+    workspace_dir=$1
+    absolute_projects=`command ls -d $workspace_dir/*/*/*`
+    projects="${absolute_projects//$workspace_dir\//}"
+    selected_project=`echo $projects | awk -v RS='[ ]' '{print $0}' | fzf`
+    absolute_project_path=$workspace_dir/$selected_project
+
+    [ -z "${TMUX}" ] && tmux attach-session -t $selected_project && exit 0
+
+    tmux has-session -t $selected_project >/dev/null
+
+    if [ $? != 0 ]; then
+	tmux new-session -d -s $selected_project -c $absolute_project_path
+	tmux rename-window -t $selected_project:1 "wt1"
+    fi
+
+    tmux switch-client -t $selected_project
 }
 
 main "$@"

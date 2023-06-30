@@ -1,15 +1,9 @@
 #!/usr/bin/env bash
 
-if [[ "${1-}" =~ ^-*h(elp)?$ ]]; then
-    echo 'Usage: ./tsaheylu.tmux
+CURRENT_DIR="$( cd "$(dirname "${BASH_SOURCE[0]}")" && pwd )"
 
-    Plugin the nerves
-'
-    exit
-fi
+source "$CURRENT_DIR/src/open_project.sh"
 
-main() {
-    echo do awesome stuff
-}
+workspace_dir="~/Workspaces"
 
-main "$@"
+tmux bind-key W display-popup -E "$CURRENT_DIR/src/open_project.sh $workspace_dir"
