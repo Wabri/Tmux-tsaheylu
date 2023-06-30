@@ -6,4 +6,4 @@ source "$CURRENT_DIR/src/open_project.sh"
 
 workspace_dir="~/Workspaces"
 
-tmux bind-key W display-popup -E "$CURRENT_DIR/src/open_project.sh $workspace_dir"
+tmux bind-key W display-popup -E "$CURRENT_DIR/src/open_project.sh $workspace_dir true"
