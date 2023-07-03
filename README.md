@@ -1,4 +1,4 @@
-# Tsaheylu
+# Tmux-tsaheylu
 
 <details>
 	<summary>Want some spoilers?</summary>

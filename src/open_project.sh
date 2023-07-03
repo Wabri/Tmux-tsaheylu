@@ -8,16 +8,18 @@ if [[ "${1-}" =~ ^-*h(elp)?$ ]]; then
     exit
 fi
 
+workspace_dir=$1
+worktree_abilitate=$2
+
 main() {
-    workspace_dir=$1
-    worktree_abilitate=$2
+    # Project selection
     selected_project=$(select_project "$workspace_dir")
+    [ -z $selected_project ] && exit 1
+
+    # Open project
     absolute_project_path=$workspace_dir/$selected_project
-
     [[ $worktree_abilitate == "true" ]] && absolute_project_path=$absolute_project_path/wt1
-
     [ -z "${TMUX}" ] && tmux attach-session -t $selected_project && exit 0
-
     tmux_open_session $selected_project $absolute_project_path
 }
 
