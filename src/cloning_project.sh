@@ -12,23 +12,24 @@ workspace_dir=$1
 worktree_abilitate=$2
 
 create_if_new() {
-    base_name=$1
+    base_path=$1
     selected=$2
+    prompt=$3
     if [[ $selected == "New" ]]; then
-        read -p "Provide new workspace name: " selected
+        read -p "Provide new $prompt name: " selected
         if [ -z $selected ]; then
             exit 1
         fi
-        mkdir $base_name/$selected
+        mkdir $base_path/$selected
     fi
     echo $selected
 }
 
 select_element_from() {
-    elements=$1
-    prompt=$2
+    prompt=$1
+    local elements=("${@:2}")
     selected=""
-    for i in ${elements[@]}
+    for i in "${elements[@]}"
     do
         echo $i
     done | fzf --prompt="$prompt>" && [ -z $selected ] || exit 1
@@ -45,6 +46,7 @@ clone_if_not_exists() {
 	    source $workspace_dir/$workspace/.envrc 2>/dev/null
 	    cd $workspace_dir/$workspace/$group
             [[ $worktree_abilitate == "true" ]] && project_name="$project_name/wt1"
+            echo $project_name
 	    git clone $project_url $project_name
         )
     fi
@@ -56,17 +58,18 @@ main() {
     project_name=`basename $project_url | sed 's/.git//g'`
 
     # Select Workspace
-    echo $workspace_dir
     workspaces=($(basename -a $(ls -d $workspace_dir/* 2>/dev/null) 2>/dev/null))
     workspaces+=('New')
-    workspace=`select_element_from $workspaces 'Workspace'`
-    workspace=`create_if_new $workspace_dir $workspace`
+    workspace=`select_element_from 'Workspace' "${workspaces[@]}"`
+    [ -z $workspace ] && exit 1
+    workspace=`create_if_new $workspace_dir $workspace 'workspace'`
 
     # Select Group
     groups=($(basename -a $(ls -d $workspace_dir/$workspace/* 2>/dev/null) 2>/dev/null))
     groups+=('New')
-    group=`select_element_from $groups 'Group'`
-    group=`create_if_new $workspace_dir/$workspace $group`
+    group=`select_element_from 'Group' "${groups[@]}"`
+    [ -z $group ] && exit 1
+    group=`create_if_new $workspace_dir/$workspace $group 'group'`
 
     # Clone project if not exists
     selected_project="$workspace/$group/$project_name"
@@ -79,3 +82,4 @@ main() {
 }
 
 main "$@"
+
