@@ -9,8 +9,9 @@ if [[ "${1-}" =~ ^-*h(elp)?$ ]]; then
 fi
 
 main() {
-    selected_project=$(select_project "$1")
+    workspace_dir=$1
     worktree_abilitate=$2
+    selected_project=$(select_project "$workspace_dir")
     absolute_project_path=$workspace_dir/$selected_project
 
     [[ $worktree_abilitate == "true" ]] && absolute_project_path=$absolute_project_path/wt1
