@@ -8,50 +8,74 @@ if [[ "${1-}" =~ ^-*h(elp)?$ ]]; then
     exit
 fi
 
-main() {
-    workspace_dir=$1
-    worktree_abilitate=$2
+workspace_dir=$1
+worktree_abilitate=$2
 
-    read -p "Provide git urls: " project_url && [ ! -z $project_url ] || exit 1
-    project_name=`basename $project_url | sed 's/.git//g'`
-
-    workspaces=($(basename -a $(ls -d $workspace_dir/*)))
-    workspaces+=('New')
-    workspace=$(for i in ${workspaces[@]}
-           do
-             echo $i
-           done | fzf --prompt='Workspace>' ${fzf_args} && [ -z $workspace ] || exit 1)
-    if [ $workspace = "New" ]; then
-        read -p "Provide new workspace name: " workspace
-        if [ -z $workspace ]; then
+create_if_new() {
+    base_name=$1
+    selected=$2
+    if [[ $selected == "New" ]]; then
+        read -p "Provide new workspace name: " selected
+        if [ -z $selected ]; then
             exit 1
         fi
-        mkdir $workspace_dir/$workspace
+        mkdir $base_name/$selected
     fi
-    groups=($(basename -a $(ls -d $workspace_dir/$workspace/* 2>/dev/null) 2>/dev/null))
-    groups+=('New')
-    group=$(for i in ${groups[@]}
-           do
-             echo $i
-           done | fzf --prompt='Group>' ${fzf_args} && [ -z $group ] || exit 1)
-    if [ $group = "New" ]; then
-        read -p "Provide new group name: " group
-        if [ -z $group ]; then
-            exit 1
-        fi
-        mkdir $workspace_dir/$workspace/$group
-    fi
-    selected_project="$workspace/$group/$project_name"
-    absolute_project_path="$workspace_dir/$workspace/$group/$project_name"
+    echo $selected
+}
 
-    if [ $(is_project_exists $workspace_dir/$workspace $group $project_name) == "false" ]; then
+select_element_from() {
+    elements=$1
+    prompt=$2
+    selected=""
+    for i in ${elements[@]}
+    do
+        echo $i
+    done | fzf --prompt="$prompt>" && [ -z $selected ] || exit 1
+    echo $selected
+}
+
+clone_if_not_exists() {
+    workspace=$1
+    group=$2
+    project_name=$3
+    project_url=$4
+    if [[ $(is_project_exists $workspace_dir/$workspace $group $project_name) == "false" ]]; then
 	(
 	    source $workspace_dir/$workspace/.envrc 2>/dev/null
 	    cd $workspace_dir/$workspace/$group
-	    git clone $project_url $project_name/wt1
-	)
+            [[ $worktree_abilitate == "true" ]] && project_name="$project_name/wt1"
+	    git clone $project_url $project_name
+        )
     fi
-    tmux_open_session $selected_project $absolute_project_path/wt1
+}
+
+main() {
+    # Read git url
+    read -p "Provide git urls: " project_url && [ ! -z $project_url ] || exit 1
+    project_name=`basename $project_url | sed 's/.git//g'`
+
+    # Select Workspace
+    echo $workspace_dir
+    workspaces=($(basename -a $(ls -d $workspace_dir/* 2>/dev/null) 2>/dev/null))
+    workspaces+=('New')
+    workspace=`select_element_from $workspaces 'Workspace'`
+    workspace=`create_if_new $workspace_dir $workspace`
+
+    # Select Group
+    groups=($(basename -a $(ls -d $workspace_dir/$workspace/* 2>/dev/null) 2>/dev/null))
+    groups+=('New')
+    group=`select_element_from $groups 'Group'`
+    group=`create_if_new $workspace_dir/$workspace $group`
+
+    # Clone project if not exists
+    selected_project="$workspace/$group/$project_name"
+    clone_if_not_exists $workspace $group $project_name $project_url
+
+    # Open project in the dedicated session
+    session_name="$workspace_dir/$selected_project"
+    [[ $worktree_abilitate == "true" ]] && session_name="$session_name/wt1"
+    tmux_open_session $selected_project $session_name
 }
 
 main "$@"
