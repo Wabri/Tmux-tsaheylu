@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-You can find the explanation of the name in the foot of this readme => [here](#-:page_with_curl:-The-name)
+You can find the explanation of the name in the foot of this readme => <a href="https://github.com/Wabri/Tmux-tsaheylu/tree/main#page_with_curl-the-name">here</a>
 </p>
 
 ## :sparkles: Features
@@ -38,7 +38,7 @@ Those are the keybinding used:
 - Select a workspace (it is possible to create a new one)
 - Select a group of the workspace (it is possible to create a new one)
 
-After those selection the project will be clone as expected and once the project is correctly cloned than create a new session with the same rules used for [open project](#Open-Project).
+After those selection the project will be clone as expected and once the project is correctly cloned than create a new session with the same rules used for [open project](#rocket-open-project).
 
 ### :rocket: Manage gitworktree (TODO)
 
@@ -98,7 +98,7 @@ You should now be able to use `tmux-tsaheylu` immediately.
 
 In order for `tmux-tsaheylu` to work, there must be [fzf](https://github.com/junegunn/fzf) installed.
 
-### :microscope: Method use to manage workspaces
+## :microscope: Method use to manage workspaces
 
 ### Workspace structure
 
@@ -163,10 +163,18 @@ WGPW is a method (I'm still thinking about change the name with a more easy to r
 The name comes from the Avatar film:
 
 ```
-The Na'vi can commune with animals on their planet by literally plugging their braid into the creatures' nerve systems. To become a warrior, a Na'vi must tame and ride a flying creature known as Ikran. The Na'vi also use this neural bonding system, called "tsaheylu", to mate with a "life partner", a bond that, when made, cannot be broken in the Na'vi's lifetime.
+The Na'vi can commune with animals on their planet by literally plugging their
+braid into the creatures' nerve systems.
+
+To become a warrior, a Na'vi must tame and ride a flying creature known as
+Ikran. 
+
+The Na'vi also use this neural bonding system, called "tsaheylu", to mate with
+a "life partner", a bond that, when made, cannot be broken in the Na'vi's
+lifetime.
 ```
 
 In this case Ikran is rappresented by Tmux. This plugin recall the connection from us and tmux, but also from all the tool we use in our personal development environment such direnv and asdf, but also neovim and lsp.
 
-I tend to be very precise in the organization of projects, this allow me to make the best use of tools such as asdf and direnv. Using the method I explained above ([Method use to manage workspaces](#:microscope:-Method-use-to-manage-workspaces)) I can define an environment for each level so that I can move from one project to the next without problems and without worrying about: environment variables, create commits with the wrong user or run something in the wrong cloud.
+I tend to be very precise in the organization of projects, this allow me to make the best use of tools such as asdf and direnv. Using the method I explained above ([Method use to manage workspaces](#microscope-method-use-to-manage-workspaces)) I can define an environment for each level so that I can move from one project to the next without problems and without worrying about: environment variables, create commits with the wrong user or run something in the wrong cloud.
 
