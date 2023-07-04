@@ -16,20 +16,19 @@ You can find the explanation of the name in the foot of this readme => <a href="
 
 In the gif you can see the open_project feature in action:
 
-![open_project.gif](resources/open_project.git)
+![open_project.gif](resources/open_project.gif)
 
 Those are the keybinding used:
 
 - `prefix`–`W` => open the project selection
-- Select a workspace
-- Select a group of the workspace
-- Select a project in the group
+- Select a project in the workspaces
+- Open a session with the name of project in the correct path
 
 When a project is selected tsaheylu create, if not already exists, a session with name `workspace/group/project` that we have selected and set the directory of the window with that path.
 
 ### :rocket: Clone a project
 
-![cloning_project.gif](resources/cloning_project.git)
+![cloning_project.gif](resources/cloning_project.gif)
 
 Those are the keybinding used:
 
