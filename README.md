@@ -53,6 +53,8 @@ The default configuration:
 ```bash
 set -g @workspace_dir '~/Workspaces'    # Set the workspaces bucket
 set -g @worktree_abilitate 'true'       # Abilitate or not the worktree (true|false)
+set -g @bind_open_project 'W'           # Change binding of [open project](#rocket-open-project)
+set -g @bind_cloning_project 'G'        # Change binding of [cloning project](#rocket-clone_a_project)
 ```
 
 ## :package: Installation
