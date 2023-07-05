@@ -33,7 +33,6 @@ select_element_from() {
     do
         echo $i
     done | fzf --prompt="$prompt>" && [ -z $selected ] || exit 1
-    echo $selected
 }
 
 clone_if_not_exists() {
