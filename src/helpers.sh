@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copy from https://github.com/olimorris/tmux-pomodoro-plus/blob/e3d011651de1c640fda24efd33a363a67e7af15d/scripts/helpers.sh#L3
+# Copy from https://github.com/olimorris/tmux-pomodoro-plus/blob/main/scripts/helpers.sh#L3
 get_tmux_option() {
 	local option=$1
 	local default_value=$2
