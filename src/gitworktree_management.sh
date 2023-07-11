@@ -17,10 +17,11 @@ worktree_abilitate=$2
 select_in_list() {
     prompt=$1
     local elements=("${@:2}")
-    for i in "${elements[@]}"
+    selected=$(for i in $elements
     do
         echo $i
-    done | fzf --prompt="$prompt>" && [ -z $selected ] || exit 1
+    done | fzf --prompt='What do you want to do>')
+    echo $selected
 }
 
 available_worktrees() {
@@ -36,32 +37,24 @@ available_worktrees() {
 
 available_branches() {
     while read -r line; do
-	branch=$(echo $line | awk '{print $1}' | sed 's/remotes\/origin\///g')
+	branch=$(awk '!/^[*+]/ {print $1}' <<< "$line" | sed 's/remotes\/origin\///g')
 	# Remove the HEAD and current branch for local remotes branches fetched
 	current_branch=`git branch --show-current`
 	if [[ $branch == $current_branch || $branch == "HEAD" ]]; then
 	    continue
 	fi
-	# BUG: 
-	#     I dont know why the branch currently is put inside the branch 
-	#     variable it becomes a grep string. should be a * because of the
-	#     awk command. And this is why there is a grep string in this 
-	#     condition below. I think there is something append with regex of
-	#     some sort.
-	# Continue if not the current branch or already local tree
-	if [[ $branch != "grep" && $branch != "+" ]]; then
-	    for tmp_branch in $branches
-	    do
-		if [[ $tmp_branch == $branch ]]; then
-		    branch=""
-		    break
-		fi
-	    done
-	    if [[ $branch == "" ]]; then
-		continue
+	# check if the branch variable is already contained in branches array
+	for tmp_branch in $branches
+	do
+	    if [[ $tmp_branch == $branch ]]; then
+		branch=""
+		break
 	    fi
-	    branches+=($branch)
+	done
+	if [[ $branch == "" ]]; then
+	    continue
 	fi
+	branches+=($branch)
     done <<< "`git branch --all`" 
     echo "${branches[@]}"
 }
@@ -85,7 +78,7 @@ move_action() {
 	exit 1
     fi
 
-    echo $worktree
+    echo TODO: switch to that worktree
 }
 
 add_action() {
@@ -107,11 +100,37 @@ add_action() {
     branch=`select_in_list 'Add worktree from' "${branches[@]}"`
 
     if [ -z $branch ]; then
-	echo "No branch with these name!"
+	read -p "Do you want to do create a new one? [y/N] " selected
+	if [[ $selected == "y" ]]; then
+	    echo TODO: create new branch + worktree
+	fi
+	read -p "Do you want to do something else? [y/N] " selected
+	if [[ $selected == "y" ]]; then
+	    main "$@"
+	fi
 	exit 1
     fi
 
-    echo $branch
+    worktrees=$(available_worktrees)
+
+    for worktree in $worktrees
+    do
+	if [[ $worktree == $branch ]]; then
+	    echo "Already a worktree"
+	    read -p "What to move on that worktree? [y/N] " selected
+	    if [[ $selected == "y" ]]; then
+		echo TODO: switch to that worktree
+		exit 1
+	    fi
+	    read -p "Do you want to do something else? [y/N] " selected
+	    if [[ $selected == "y" ]]; then
+		main "$@"
+	    fi
+	    exit 1
+	fi
+    done
+
+    echo "TODO: create a new worktree with the branch => $branch"
 }
 
 main() {
@@ -137,5 +156,4 @@ main() {
     exit 1
 }
 
-git fetch --prune --all
 main "$@"
