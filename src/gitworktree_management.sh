@@ -25,6 +25,7 @@ select_in_list() {
 }
 
 available_worktrees() {
+    worktrees=()
     while read -r line; do
 	worktree_branch=`echo $line | awk '{print($3)}' | tr -d '[]'`
 	current_branch=`git branch --show-current`
@@ -36,8 +37,9 @@ available_worktrees() {
 }
 
 available_branches() {
+    branches=()
     while read -r line; do
-	branch=$(awk '!/^[*+]/ {print $1}' <<< "$line" | sed 's/remotes\/origin\///g')
+	branch=`awk '!/^[*+]/ {print $1}' <<< "$line" | sed 's/remotes\/origin\///g'`
 	# Remove the HEAD and current branch for local remotes branches fetched
 	current_branch=`git branch --show-current`
 	if [[ $branch == $current_branch || $branch == "HEAD" ]]; then
@@ -57,6 +59,24 @@ available_branches() {
 	branches+=($branch)
     done <<< "`git branch --all`" 
     echo "${branches[@]}"
+}
+
+add_new_worktree(){
+    branch=$1
+    current_worktree_number=`basename $(pwd) | sed 's/wt//g'`
+    while read -r line; do
+	worktree_path=`echo $line | awk '{print($1)}'`
+	worktree_number=`basename $worktree_path | sed 's/wt//g'`
+	if (( $worktree_number != $current_worktree_number )); then
+	    break
+	fi
+	current_worktree_number=$((current_worktree_number+1))
+    done <<< "`git worktree list`" 
+
+    absolute_path=`pwd`
+    new_worktree_path="${absolute_path/$(basename $(pwd))/}/wt$current_worktree_number"
+    git worktree add $new_worktree_path $branch
+    tmux new-window -n "wt$current_worktree_number" -c $new_worktree_path
 }
 
 move_action() {
@@ -130,7 +150,7 @@ add_action() {
 	fi
     done
 
-    echo "TODO: create a new worktree with the branch => $branch"
+    add_new_worktree $branch
 }
 
 main() {
