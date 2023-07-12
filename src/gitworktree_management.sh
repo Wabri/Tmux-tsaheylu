@@ -16,21 +16,21 @@ worktree_abilitate=$2
 
 select_in_list() {
     prompt=$1
-    local elements=("${@:2}")
-    selected=$(for i in $elements
+    elements=(${@:2})
+    selected=$(for i in ${elements[@]}
     do
         echo $i
-    done | fzf --prompt='What do you want to do>')
+    done | fzf --prompt="$prompt")
     echo $selected
 }
 
 available_worktrees() {
     worktrees=()
     while read -r line; do
-	worktree_branch=`echo $line | awk '{print($3)}' | tr -d '[]'`
+	worktree_branch=`awk '{print($3)}' <<< "$line" | tr -d '[]'`
 	current_branch=`git branch --show-current`
 	if [[ $worktree_branch != $current_branch ]]; then
-	    worktrees+=($worktree_branch)
+	    worktrees+=("$worktree_branch")
 	fi
     done <<< "`git worktree list`" 
     echo "${worktrees[@]}"
@@ -38,17 +38,18 @@ available_worktrees() {
 
 available_branches() {
     branches=()
+    worktrees=($(available_worktrees))
     while read -r line; do
 	branch=`awk '!/^[*+]/ {print $1}' <<< "$line" | sed 's/remotes\/origin\///g'`
 	# Remove the HEAD and current branch for local remotes branches fetched
 	current_branch=`git branch --show-current`
-	if [[ $branch == $current_branch || $branch == "HEAD" ]]; then
+	if [[ $branch == $current_branch || $branch == "HEAD" || $branch == "" ]]; then
 	    continue
 	fi
 	# check if the branch variable is already contained in branches array
-	for tmp_branch in $branches
+	for tmp_branch in ${branches[@]}
 	do
-	    if [[ $tmp_branch == $branch ]]; then
+	    if [[ "$tmp_branch" == "$branch" ]]; then
 		branch=""
 		break
 	    fi
@@ -56,7 +57,18 @@ available_branches() {
 	if [[ $branch == "" ]]; then
 	    continue
 	fi
-	branches+=($branch)
+	# check if the branch variable is already checkout on a worktree
+	for worktree in ${worktrees[@]}
+	do
+	    if [[ "$worktree" == "$branch" ]]; then
+		branch=""
+		break
+	    fi
+	done
+	if [[ $branch == "" ]]; then
+	    continue
+	fi
+	branches+=("$branch")
     done <<< "`git branch --all`" 
     echo "${branches[@]}"
 }
@@ -72,15 +84,27 @@ add_new_worktree(){
 	fi
 	current_worktree_number=$((current_worktree_number+1))
     done <<< "`git worktree list`" 
-
     absolute_path=`pwd`
     new_worktree_path="${absolute_path/$(basename $(pwd))/}/wt$current_worktree_number"
     git worktree add $new_worktree_path $branch
     tmux new-window -n "wt$current_worktree_number" -c $new_worktree_path
 }
 
+move_to_worktree_window() {
+    absolute_path=`git worktree list | grep $1 | awk '{print($1)}'`
+    worktree_name=`basename $absolute_path`
+
+    session_name=$(tmux display-message -p '#S')
+    # Check if the window exists in the session
+    if tmux list-windows -t "$session_name" | grep -q "$worktree_name"; then
+	tmux select-window -t "$session_name:$worktree_name"
+    else
+	tmux new-window -n "$worktree_name" -c $absolute_path
+    fi
+}
+
 move_action() {
-    worktrees=$(available_worktrees)
+    worktrees=($(available_worktrees))
 
     if [ ${#worktrees[@]} -eq 0 ]; then
 	echo "This is the only worktree active"
@@ -98,11 +122,11 @@ move_action() {
 	exit 1
     fi
 
-    echo TODO: switch to that worktree
+    move_to_worktree_window $worktree
 }
 
 add_action() {
-    branches=$(available_branches)
+    branches=($(available_branches))
 
     if [ ${#branches[@]} -eq 0 ]; then
 	echo "No branch available"
@@ -117,7 +141,7 @@ add_action() {
 	exit 1
     fi
 
-    branch=`select_in_list 'Add worktree from' "${branches[@]}"`
+    branch=`select_in_list 'Add worktree from>' "${branches[@]}"`
 
     if [ -z $branch ]; then
 	read -p "Do you want to do create a new one? [y/N] " selected
@@ -131,7 +155,7 @@ add_action() {
 	exit 1
     fi
 
-    worktrees=$(available_worktrees)
+    worktrees=($(available_worktrees))
 
     for worktree in $worktrees
     do
@@ -139,7 +163,7 @@ add_action() {
 	    echo "Already a worktree"
 	    read -p "What to move on that worktree? [y/N] " selected
 	    if [[ $selected == "y" ]]; then
-		echo TODO: switch to that worktree
+		move_to_worktree_window $branch
 		exit 1
 	    fi
 	    read -p "Do you want to do something else? [y/N] " selected
