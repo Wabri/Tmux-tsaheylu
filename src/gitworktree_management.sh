@@ -132,27 +132,39 @@ add_action() {
 	echo "No branch available"
 	read -p "Do you want to do create a new one? [y/N] " selected
 	if [[ $selected == "y" ]]; then
-	    echo TODO: create new branch + worktree
+	    selected=""
+	    until [[ $selected == "y" ]]; do
+		read -p "Give me the name of the new branch> " branch
+		read -p "Confirm this name of the branch? $branch [y/N] " selected
+	    done
+	    git branch $branch
+	else
+	    read -p "Do you want to do something else? [y/N] " selected
+	    if [[ $selected == "y" ]]; then
+		main "$@"
+	    fi
+	    exit 1
 	fi
-	read -p "Do you want to do something else? [y/N] " selected
-	if [[ $selected == "y" ]]; then
-	    main "$@"
-	fi
-	exit 1
-    fi
+    else
+	branch=`select_in_list 'Add worktree from>' "${branches[@]}"`
 
-    branch=`select_in_list 'Add worktree from>' "${branches[@]}"`
-
-    if [ -z $branch ]; then
-	read -p "Do you want to do create a new one? [y/N] " selected
-	if [[ $selected == "y" ]]; then
-	    echo TODO: create new branch + worktree
+	if [ -z $branch ]; then
+	    read -p "Do you want to do create a new one? [y/N] " selected
+	    if [[ $selected == "y" ]]; then
+		selected=""
+		until [[ $selected == "y" ]]; do
+		    read -p "Give me the name of the new branch> " branch
+		    read -p "Confirm this name of the branch? $branch [y/N] " selected
+		done
+		git branch $branch
+	    else
+		read -p "Do you want to do something else? [y/N] " selected
+		if [[ $selected == "y" ]]; then
+		    main "$@"
+		fi
+		exit 1
+	    fi
 	fi
-	read -p "Do you want to do something else? [y/N] " selected
-	if [[ $selected == "y" ]]; then
-	    main "$@"
-	fi
-	exit 1
     fi
 
     worktrees=($(available_worktrees))
@@ -177,6 +189,27 @@ add_action() {
     add_new_worktree $branch
 }
 
+remove_action() {
+    worktrees=($(available_worktrees))
+    branch=`select_in_list 'Remove worktree>' "${worktrees[@]}"`
+    worktree_path=`git worktree list | grep "\[$branch\]" | awk '{print($1)}'`
+    read -p "Do you really want to remove $branch worktree? [y/N] " selected
+    if [[ $selected == "y" ]]; then
+	git worktree remove $worktree_path
+	worktree_name=$(basename $worktree_path)
+	session_name=$(tmux display-message -p '#S')
+	tmux has-session -t $session_name:$worktree_name
+	if [ $? == 0 ]; then
+	    tmux kill-window -t $session_name:$worktree_name
+	fi
+    fi
+    read -p "Do you want to do something else? [y/N] " selected
+    if [[ $selected == "y" ]]; then
+	main "$@"
+    fi
+    exit 1
+}
+
 main() {
     actions=(Move Add Remove Leave)
     action=$(for i in ${actions[@]}
@@ -191,7 +224,8 @@ main() {
         "Add")
 	    add_action
     	;;
-        "Remove") echo "TODO: Remove me"
+        "Remove")
+	    remove_action
     	;;
         *) echo "TODO: We are leaving"
     	;;

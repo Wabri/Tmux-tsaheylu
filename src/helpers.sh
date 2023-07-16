@@ -15,8 +15,6 @@ get_tmux_option() {
 tmux_open_session() {
     project_name=$1
     project_path=$2
-    echo $project_name
-    echo $project_path
     tmux has-session -t $project_name >/dev/null
 
     if [ $? != 0 ]; then
