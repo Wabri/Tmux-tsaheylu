@@ -127,15 +127,16 @@ move_action() {
 
 add_action() {
     branches=($(available_branches))
+    branches+=("-Add-New-Branch-")
 
-    if [ ${#branches[@]} -eq 0 ]; then
+    if [ ${#branches[@]} -eq 1 ]; then
 	echo "No branch available"
 	read -p "Do you want to do create a new one? [y/N] " selected
 	if [[ $selected == "y" ]]; then
 	    selected=""
 	    until [[ $selected == "y" ]]; do
 		read -p "Give me the name of the new branch> " branch
-		read -p "Confirm this name of the branch? $branch [y/N] " selected
+		read -p "Confirm this name of the branch? --> $branch [y/N] " selected
 	    done
 	    git branch $branch
 	else
@@ -148,13 +149,13 @@ add_action() {
     else
 	branch=`select_in_list 'Add worktree from>' "${branches[@]}"`
 
-	if [ -z $branch ]; then
+	if [ -z $branch ] || [[ $branch == "-Add-New-Branch-" ]]; then
 	    read -p "Do you want to do create a new one? [y/N] " selected
 	    if [[ $selected == "y" ]]; then
 		selected=""
 		until [[ $selected == "y" ]]; do
 		    read -p "Give me the name of the new branch> " branch
-		    read -p "Confirm this name of the branch? $branch [y/N] " selected
+		    read -p "Confirm this name of the branch? --> $branch [y/N] " selected
 		done
 		git branch $branch
 	    else
@@ -191,6 +192,14 @@ add_action() {
 
 remove_action() {
     worktrees=($(available_worktrees))
+    if [ ${#worktrees[@]} -eq 0 ]; then
+	echo "This is the only worktree active"
+	read -p "Do you want to do something else? [y/N] " selected
+	if [[ $selected == "y" ]]; then
+	    main "$@"
+	fi
+	exit 1
+    fi
     branch=`select_in_list 'Remove worktree>' "${worktrees[@]}"`
     worktree_path=`git worktree list | grep "\[$branch\]" | awk '{print($1)}'`
     read -p "Do you really want to remove $branch worktree? [y/N] " selected
@@ -210,8 +219,29 @@ remove_action() {
     exit 1
 }
 
+list_action() {
+    worktrees=()
+    echo "---------------Worktree List---------------------"
+    while read -r line; do
+	worktree_path=`basename $(awk '{print($1)}' <<< "$line")`
+	worktree_branch=`awk '{print($3)}' <<< "$line" | tr -d '[]'`
+	current_branch=`git branch --show-current`
+	if [[ $worktree_branch == $current_branch ]]; then
+	    echo "$worktree_branch -> $worktree_path <- Current"
+	else
+	    echo "$worktree_branch -> $worktree_path"
+	fi
+    done <<< "`git worktree list`" 
+    echo "-------------------------------------------------"
+    read -p "Do you want to do something else? [y/N] " selected
+    if [[ $selected == "y" ]]; then
+	main "$@"
+    fi
+    exit 1
+}
+
 main() {
-    actions=(Move Add Remove Leave)
+    actions=(Move Add List Remove)
     action=$(for i in ${actions[@]}
     do
         echo $i
@@ -223,6 +253,9 @@ main() {
     	;;
         "Add")
 	    add_action
+    	;;
+        "List")
+	    list_action
     	;;
         "Remove")
 	    remove_action
