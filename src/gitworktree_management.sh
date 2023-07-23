@@ -107,7 +107,9 @@ move_action() {
     worktrees=($(available_worktrees))
 
     if [ ${#worktrees[@]} -eq 0 ]; then
-	echo "This is the only worktree active"
+	echo "---------------Worktree Move---------------------"
+	echo "[INFO] This is the only worktree active"
+	echo "-------------------------------------------------"
 	read -p "Do you want to do something else? [y/N] " selected
 	if [[ $selected == "y" ]]; then
 	    main "$@"
@@ -193,7 +195,9 @@ add_action() {
 remove_action() {
     worktrees=($(available_worktrees))
     if [ ${#worktrees[@]} -eq 0 ]; then
-	echo "This is the only worktree active"
+	echo "---------------Worktree Remove-------------------"
+	echo "[INFO] This is the only worktree active"
+	echo "-------------------------------------------------"
 	read -p "Do you want to do something else? [y/N] " selected
 	if [[ $selected == "y" ]]; then
 	    main "$@"
@@ -204,13 +208,18 @@ remove_action() {
     worktree_path=`git worktree list | grep "\[$branch\]" | awk '{print($1)}'`
     read -p "Do you really want to remove $branch worktree? [y/N] " selected
     if [[ $selected == "y" ]]; then
+	echo "---------------Worktree Remove-------------------"
 	git worktree remove $worktree_path
+	if [ $? -eq 0 ] ; then
+	    echo "[INFO] worktree for branch $branch removed"
+	fi
 	worktree_name=$(basename $worktree_path)
 	session_name=$(tmux display-message -p '#S')
 	tmux has-session -t $session_name:$worktree_name
 	if [ $? == 0 ]; then
 	    tmux kill-window -t $session_name:$worktree_name
 	fi
+	echo "-------------------------------------------------"
     fi
     read -p "Do you want to do something else? [y/N] " selected
     if [[ $selected == "y" ]]; then
