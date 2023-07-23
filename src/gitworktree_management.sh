@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 
+source "$(dirname $0)/helpers.sh"
+
+# move to the current window to do management
+cd $(tmux display-message -p -F "#{pane_current_path}")
+
+# check if is a git repository
 git status >& /dev/null 
 [[ $? -ne 0 ]] && echo 'Not a git repository' && exit 1
-
-source "$(dirname $0)/helpers.sh"
 
 if [[ "${1-}" =~ ^-*h(elp)?$ ]]; then
     echo 'Usage: ./gitworktree_management.sh workspace_dir worktree_abilitate
