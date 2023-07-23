@@ -18,19 +18,19 @@ In the gif you can see the open_project feature in action:
 
 ![open_project.gif](resources/open_project.gif)
 
-Those are the keybinding used:
+Those are the steps:
 
 - `prefix`–`W` => open the project selection
 - Select a project in the workspaces
 - Open a session with the name of project in the correct path
 
-When a project is selected tsaheylu create, if not already exists, a session with name `workspace/group/project` that we have selected and set the directory of the window with that path.
+When a project is selected, tsaheylu create, if not already exists, a session with name `workspace/group/project` that we have selected and set the directory of the window with that path.
 
 ### :rocket: Clone a project
 
 ![cloning_project.gif](resources/cloning_project.gif)
 
-Those are the keybinding used:
+Those are the steps:
 
 - `prefix`–`G` => open the cloning popup
 - Paste the url
@@ -39,9 +39,41 @@ Those are the keybinding used:
 
 After those selection the project will be clone as expected and once the project is correctly cloned than create a new session with the same rules used for [open project](#rocket-open-project).
 
-### :rocket: Manage gitworktree (TODO)
+### :rocket: Manage gitworktree
 
-[See Issue #5](https://github.com/Wabri/Tmux-tsaheylu/issues/5)
+#### Add feature
+
+![add.gif](resources/add.gif)
+
+Those are the steps:
+
+- `prefix`–`g` => open the worktree manager
+- Type `add` => create a new worktree
+- Select the branch to checkout into that worktree
+
+After that last step a new worktree will be open and tmux move into it.
+
+#### List and move features
+
+![listandmove.gif](resources/listandmove.gif)
+
+Those are the steps:
+
+- `prefix`–`g` => open the worktree manager
+- Type `list` => list all the worktree active
+- Type `y` to do something else
+- Type `move` => move to an active worktree
+
+#### Remove feature
+
+![remove.gif](resources/remove.gif)
+
+Those are the steps:
+
+- `prefix`–`g` => open the worktree manager
+- Type `remove` => remove an existing worktree
+- Select the worktree to remove
+- Confirm the action with `y` => remove worktree and directory used for it
 
 ### :rocket: Manage templates (TODO)
 
