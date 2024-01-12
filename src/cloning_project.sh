@@ -54,7 +54,7 @@ clone_if_not_exists() {
 main() {
     # Read git url
     read -p "Provide git urls: " project_url && [ ! -z $project_url ] || exit 1
-    project_name=`basename $project_url | sed 's/.git//g'`
+    project_name=`basename $project_url | sed 's/.git//g' | sed 's/\./_/g'`
 
     # Select Workspace
     workspaces=($(basename -a $(ls -d $workspace_dir/* 2>/dev/null) 2>/dev/null))
