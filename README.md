@@ -81,7 +81,7 @@ Those are the steps:
 
 Those are the steps:
 
-- `prefix`–`N` => open the worktree manager
+- `prefix`–`N` => open the type the name popup
 - Type the name of the project
 - Select a workspace (it is possible to create a new one)
 - Select a group of the workspace (it is possible to create a new one)
