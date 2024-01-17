@@ -75,6 +75,17 @@ Those are the steps:
 - Select the worktree to remove
 - Confirm the action with `y` => remove worktree and directory used for it
 
+### :rocket: New Project
+
+![new.gif](resources/new.gif)
+
+Those are the steps:
+
+- `prefix`–`N` => open the worktree manager
+- Type the name of the project
+- Select a workspace (it is possible to create a new one)
+- Select a group of the workspace (it is possible to create a new one)
+
 ### :rocket: Manage templates (TODO)
 
 [See Issue #17](https://github.com/Wabri/Tmux-tsaheylu/issues/17)
