@@ -26,6 +26,19 @@ Those are the steps:
 
 When a project is selected, tsaheylu create, if not already exists, a session with name `workspace/group/project` that we have selected and set the directory of the window with that path.
 
+### :rocket: New Project
+
+![new.gif](resources/new.gif)
+
+Those are the steps:
+
+- `prefix`–`N` => open the type the name popup
+- Type the name of the project
+- Select a workspace (it is possible to create a new one)
+- Select a group of the workspace (it is possible to create a new one)
+
+The project newly created have the git initialization already done without any remote. 
+
 ### :rocket: Clone a project
 
 ![cloning_project.gif](resources/cloning_project.gif)
