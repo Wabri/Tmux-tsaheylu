@@ -16,12 +16,13 @@ main() {
     # Project selection
     selected_template=$(select_template "$template_dir")
     [ -z $selected_template ] && exit 1
-
-    # Open project
     absolute_template_path="$template_dir/$selected_template"
 
     # Apply the template
-    cp -r $absolute_template_path/.* .
+    apply_template $absolute_template_path
+
+    # Save the applied template
+    echo $selected_template >> .template.tsaheylu
 }
 
 main "$@"

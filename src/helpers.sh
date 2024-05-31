@@ -53,3 +53,12 @@ select_template() {
     selected_template=`echo $templates | awk -v RS='[ ]' '{print $0}' | fzf` 
     echo $selected_template
 }
+
+apply_template() {
+    absolute_template_path=$1
+    find "$absolute_template_path" -type f | while read -r file 
+    do
+        cat $file >> `basename $file`
+    done
+}
+
