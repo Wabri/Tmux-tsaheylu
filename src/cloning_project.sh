@@ -10,6 +10,7 @@ fi
 
 workspace_dir=$1
 worktree_abilitate=$2
+template_dir=$3
 
 create_if_new() {
     base_path=$1
@@ -44,10 +45,11 @@ clone_if_not_exists() {
 	(
 	    source $workspace_dir/$workspace/.envrc 2>/dev/null
 	    cd $workspace_dir/$workspace/$group
-            [[ $worktree_abilitate == "true" ]] && project_name="$project_name/wt1"
-            echo $project_name
+        [[ $worktree_abilitate == "true" ]] && project_name="$project_name/wt1"
 	    git clone $project_url $project_name
-        )
+	    cd $workspace_dir/$workspace/$group/$project_name
+        apply_template $template_dir/default
+    )
     fi
 }
 

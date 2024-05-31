@@ -6,7 +6,7 @@ CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd )"
 
 workspace_dir=$(get_tmux_option "@worksace_dir" "~/Workspaces")
 worktree_abilitate=$(get_tmux_option "@worktree_abilitate" "true")
-template_dir=$(get_tmux_option "@template_dir" "~/Templates")
+template_dir=$(get_tmux_option "@template_dir" "~/Templates/Tmux-Tsaheylu")
 
 # binding options
 bind_open_project=$(get_tmux_option "@bind_open_project" "W")

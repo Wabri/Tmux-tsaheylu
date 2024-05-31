@@ -60,5 +60,6 @@ apply_template() {
     do
         cat $file >> `basename $file`
     done
+    echo $selected_template >> .template.tsaheylu
 }
 

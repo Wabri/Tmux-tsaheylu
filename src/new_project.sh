@@ -10,6 +10,7 @@ fi
 
 workspace_dir=$1
 worktree_abilitate=$2
+template_dir=$3
 
 create_if_new() {
     base_path=$1
@@ -43,10 +44,11 @@ create_project_if_not_exists() {
 	(
 	    source $workspace_dir/$workspace/.envrc 2>/dev/null
 	    cd $workspace_dir/$workspace/$group
-            [[ $worktree_abilitate == "true" ]] && project_name="$project_name/wt1"
+        [[ $worktree_abilitate == "true" ]] && project_name="$project_name/wt1"
 	    mkdir -p $project_name
 	    cd $project_name
 	    git init
+        apply_template $template_dir/default
     )
     fi
 }
