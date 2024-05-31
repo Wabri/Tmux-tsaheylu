@@ -117,19 +117,21 @@ By default the directory where the template must be is `~/Templates/Tmux-Tsaheyl
 
 When a template is added the file `.template.tsaheylu` is update with the name of the template in order to keep track of every template used in the project.
 
-**NB: When a new [Worktree](#:rocket:_Manage_gitworktree) is created all the template found in the worktree will be apply to the new one.**
+NB: When a new [Worktree](#rocket-manage-gitworktree) is created all the template found in the worktree will be apply to the new one.
+
+NB2: Whenever a new [Clone](#rocket-clone-a-project) is done the default template is apply.
 
 ## :wrench: Configuration
 
 The default configuration:
 
 ```bash
-set -g @workspace_dir '~/Workspaces'    # Set the workspaces bucket
-set -g @template_dir '~/Templates/Tmux-Tsaheylu'    # Set the template bucket
-set -g @worktree_abilitate 'true'       # Abilitate or not the worktree (true|false)
-set -g @bind_open_project 'W'           # Change binding of [open project](#rocket-open-project)
-set -g @bind_cloning_project 'G'        # Change binding of [cloning project](#rocket-clone_a_project)
-set -g @bind_template_selection 'T'        # Change binding of [cloning project](#rocket-clone_a_project)
+set -g @workspace_dir '~/Workspaces'                # Set the workspaces bucket
+set -g @template_dir '~/Templates/Tmux-Tsaheylu'    # Set the templates bucket
+set -g @worktree_abilitate 'true'                   # Abilitate or not the worktree (true|false)
+set -g @bind_open_project 'W'                       # Change binding of [open project](#rocket-open-project)
+set -g @bind_cloning_project 'G'                    # Change binding of [cloning project](#rocket-clone_a_project)
+set -g @bind_template_selection 'T'                 # Change binding of [manage template](#rocket-manage-templates)
 ```
 
 ## :package: Installation
