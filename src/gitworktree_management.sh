@@ -227,6 +227,7 @@ remove_action() {
 	            fi
 	        fi
 	    fi
+	    git branch -D $branch
 	    worktree_name=$(basename $worktree_path)
 	    session_name=$(tmux display-message -p '#S')
 	    tmux has-session -t $session_name:$worktree_name
