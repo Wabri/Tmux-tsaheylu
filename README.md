@@ -37,7 +37,7 @@ Those are the steps:
 - Select a workspace (it is possible to create a new one)
 - Select a group of the workspace (it is possible to create a new one)
 
-The project newly created have the git initialization already done without any remote. 
+The project newly created have the git initialization already done without any remote.
 
 ### :rocket: Clone a project
 
@@ -88,18 +88,50 @@ Those are the steps:
 - Select the worktree to remove
 - Confirm the action with `y` => remove worktree and directory used for it
 
-### :rocket: Manage templates (TODO)
+### :rocket: Manage templates
 
-[See Issue #17](https://github.com/Wabri/Tmux-tsaheylu/issues/17)
+A template is a directory with files that are needed to be apply.
+
+![template.gif](resources/template.gif)
+
+Those are the steps:
+
+- `prefix`–`T` => open the template manager
+- Type `golang` => search the golang template
+- Apply the template
+  - In these case my template have only 1 change to apply
+  - Every changes will append the files if the file already exists, below the extended example:
+    ![template.gif](resources/template2.gif)
+
+By default the directory where the template must be is `~/Templates/Tmux-Tsaheylu`, for example in my case I have those:
+
+```
+.
+└── Tmux-Tsaheylu
+    ├── Bash
+    ├── default
+    ├── GitCredentials
+    ├── Golang
+    └── Python3
+```
+
+When a template is added the file `.template.tsaheylu` is update with the name of the template in order to keep track of every template used in the project.
+
+NB: When a new [Worktree](#rocket-manage-gitworktree) is created all the template found in the worktree will be apply to the new one.
+
+NB2: Whenever a new [Clone](#rocket-clone-a-project) is done the default template is apply.
 
 ## :wrench: Configuration
+
 The default configuration:
 
 ```bash
-set -g @workspace_dir '~/Workspaces'    # Set the workspaces bucket
-set -g @worktree_abilitate 'true'       # Abilitate or not the worktree (true|false)
-set -g @bind_open_project 'W'           # Change binding of [open project](#rocket-open-project)
-set -g @bind_cloning_project 'G'        # Change binding of [cloning project](#rocket-clone_a_project)
+set -g @workspace_dir '~/Workspaces'                # Set the workspaces bucket
+set -g @template_dir '~/Templates/Tmux-Tsaheylu'    # Set the templates bucket
+set -g @worktree_abilitate 'true'                   # Abilitate or not the worktree (true|false)
+set -g @bind_open_project 'W'                       # Change binding of [open project](#rocket-open-project)
+set -g @bind_cloning_project 'G'                    # Change binding of [cloning project](#rocket-clone_a_project)
+set -g @bind_template_selection 'T'                 # Change binding of [manage template](#rocket-manage-templates)
 ```
 
 ## :package: Installation
@@ -110,7 +142,7 @@ The easiest way to install `tmux-tsaheylu` is via the [Tmux Plugin Manager](http
 
 1.  Add plugin to the list of TPM plugins in `.tmux.conf`:
 
-    ``` tmux
+    ```tmux
     set -g @plugin 'wabri/tmux-tsaheylu'
     ```
 
@@ -121,19 +153,19 @@ The easiest way to install `tmux-tsaheylu` is via the [Tmux Plugin Manager](http
 
 1.  Clone the repository
 
-    ``` sh
+    ```sh
     $ git clone https://github.com/wabri/tmux-tsaheylu ~/clone/path
     ```
 
 2.  Add this line to the bottom of `.tmux.conf`
 
-    ``` tmux
+    ```tmux
     run-shell ~/clone/path/tsaheylu.tmux
     ```
 
 3.  Reload the `tmux` environment
 
-    ``` sh
+    ```sh
     # type this inside tmux
     $ tmux source-file ~/.tmux.conf
     ```
@@ -184,12 +216,13 @@ And yes the worktrees are rapresented as triangles because they are trees.
 ### The problems
 
 On my daily job I have 3 main problem:
+
 1. many hosting server or clients where i need to work on (including my personal projects), let's call them **Workspaces**
 2. on every workspaces I need to sort every projects based on the ownership, let's call them **Groups**
 3. I work on different **Projects**
-    - some of them needs time to be accepted or tested and this could take a lot of times
-    - some of them have different static branches and don't want to checkout everytime in one to another
-    - more that don't remember :)
+   - some of them needs time to be accepted or tested and this could take a lot of times
+   - some of them have different static branches and don't want to checkout everytime in one to another
+   - more that don't remember :)
 
 To solve this I create the **WGPW** method (I swear that the fact that my alias is **W**abri and my real name is **G**abriele **P**uliti is a coincidence). This method consist in organize every single project in directory and subdirectory like this:
 
@@ -213,7 +246,7 @@ The Na'vi can commune with animals on their planet by literally plugging their
 braid into the creatures' nerve systems.
 
 To become a warrior, a Na'vi must tame and ride a flying creature known as
-Ikran. 
+Ikran.
 
 The Na'vi also use this neural bonding system, called "tsaheylu", to mate with
 a "life partner", a bond that, when made, cannot be broken in the Na'vi's
@@ -223,4 +256,3 @@ lifetime.
 In this case Ikran is rappresented by Tmux. This plugin recall the connection from us and tmux, but also from all the tool we use in our personal development environment such direnv and asdf, but also neovim and lsp.
 
 I tend to be very precise in the organization of projects, this allow me to make the best use of tools such as asdf and direnv. Using the method I explained above ([Method use to manage workspaces](#microscope-method-use-to-manage-workspaces)) I can define an environment for each level so that I can move from one project to the next without problems and without worrying about: environment variables, create commits with the wrong user or run something in the wrong cloud.
-

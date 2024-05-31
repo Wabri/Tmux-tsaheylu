@@ -46,3 +46,20 @@ is_project_exists() {
     fi
 }
 
+select_template() {
+    template_dir=$1
+    absolute_projects=`command ls -d $template_dir/*`
+    templates="${absolute_projects//$template_dir\//}"
+    selected_template=`echo $templates | awk -v RS='[ ]' '{print $0}' | fzf` 
+    echo $selected_template
+}
+
+apply_template() {
+    absolute_template_path=$1
+    find "$absolute_template_path" -type f | while read -r file 
+    do
+        cat $file >> `basename $file`
+    done
+    echo $selected_template >> .template.tsaheylu
+}
+

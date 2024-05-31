@@ -17,6 +17,7 @@ fi
 
 workspace_dir=$1
 worktree_abilitate=$2
+template_dir=$3
 
 select_in_list() {
     prompt=$1
@@ -81,17 +82,25 @@ add_new_worktree(){
     branch=$1
     current_worktree_number=`basename $(pwd) | sed 's/wt//g'`
     while read -r line; do
-	worktree_path=`echo $line | awk '{print($1)}'`
-	worktree_number=`basename $worktree_path | sed 's/wt//g'`
-	if (( $worktree_number != $current_worktree_number )); then
-	    break
-	fi
-	current_worktree_number=$((current_worktree_number+1))
+	    worktree_path=`echo $line | awk '{print($1)}'`
+	    worktree_number=`basename $worktree_path | sed 's/wt//g'`
+	    if (( $worktree_number != $current_worktree_number )); then
+	        continue
+	    fi
+	    current_worktree_number=$((current_worktree_number+1))
     done <<< "`git worktree list`" 
     absolute_path=`pwd`
     new_worktree_path="${absolute_path/$(basename $(pwd))/}/wt$current_worktree_number"
     git worktree add $new_worktree_path $branch
-    tmux new-window -n "wt$current_worktree_number" -c $new_worktree_path
+    (
+        cd $new_worktree_path || exit
+        while IFS= read -r line; do
+            absolute_template_path="$template_dir/$line"
+            apply_template $absolute_template_path
+        done < "$absolute_path/.template.tsaheylu"
+        cp $absolute_path/.template.tsaheylu .
+    )
+    tmux new-window -n "wt$current_worktree_number:$branch" -c $new_worktree_path
 }
 
 move_to_worktree_window() {
@@ -101,9 +110,9 @@ move_to_worktree_window() {
     session_name=$(tmux display-message -p '#S')
     # Check if the window exists in the session
     if tmux list-windows -t "$session_name" | grep -q "$worktree_name"; then
-	tmux select-window -t "$session_name:$worktree_name"
+	    tmux select-window -t "$session_name:$worktree_name"
     else
-	tmux new-window -n "$worktree_name" -c $absolute_path
+	    tmux new-window -n "$worktree_name" -c $absolute_path
     fi
 }
 
@@ -124,8 +133,8 @@ move_action() {
     worktree=`select_in_list 'Worktree>' "${worktrees[@]}"`
 
     if [ -z $worktree ]; then
-	echo "No worktree exists or selected"
-	exit 1
+	    echo "No worktree exists or selected"
+	    exit 1
     fi
 
     move_to_worktree_window $worktree
@@ -136,42 +145,42 @@ add_action() {
     branches+=("-Add-New-Branch-")
 
     if [ ${#branches[@]} -eq 1 ]; then
-	echo "No branch available"
-	read -p "Do you want to do create a new one? [y/N] " selected
-	if [[ $selected == "y" ]]; then
-	    selected=""
-	    until [[ $selected == "y" ]]; do
-		read -p "Give me the name of the new branch> " branch
-		read -p "Confirm this name of the branch? --> $branch [y/N] " selected
-	    done
-	    git branch $branch
-	else
-	    read -p "Do you want to do something else? [y/N] " selected
-	    if [[ $selected == "y" ]]; then
-		main "$@"
-	    fi
-	    exit 1
-	fi
-    else
-	branch=`select_in_list 'Add worktree from>' "${branches[@]}"`
-
-	if [ -z $branch ] || [[ $branch == "-Add-New-Branch-" ]]; then
+	    echo "No branch available"
 	    read -p "Do you want to do create a new one? [y/N] " selected
 	    if [[ $selected == "y" ]]; then
-		selected=""
-		until [[ $selected == "y" ]]; do
-		    read -p "Give me the name of the new branch> " branch
-		    read -p "Confirm this name of the branch? --> $branch [y/N] " selected
-		done
-		git branch $branch
+	        selected=""
+	        until [[ $selected == "y" ]]; do
+		        read -p "Give me the name of the new branch> " branch
+		        read -p "Confirm this name of the branch? --> $branch [y/N] " selected
+	        done
+	        git branch $branch
 	    else
-		read -p "Do you want to do something else? [y/N] " selected
-		if [[ $selected == "y" ]]; then
-		    main "$@"
-		fi
-		exit 1
+	        read -p "Do you want to do something else? [y/N] " selected
+	        if [[ $selected == "y" ]]; then
+		        main "$@"
+	        fi
+	        exit 1
 	    fi
-	fi
+    else
+	    branch=`select_in_list 'Add worktree from>' "${branches[@]}"`
+
+	    if [ -z $branch ] || [[ $branch == "-Add-New-Branch-" ]]; then
+	        read -p "Do you want to do create a new one? [y/N] " selected
+	        if [[ $selected == "y" ]]; then
+		        selected=""
+		        until [[ $selected == "y" ]]; do
+		            read -p "Give me the name of the new branch> " branch
+		            read -p "Confirm this name of the branch? --> $branch [y/N] " selected
+		        done
+		        git branch $branch
+	        else
+		        read -p "Do you want to do something else? [y/N] " selected
+		        if [[ $selected == "y" ]]; then
+		            main "$@"
+		        fi
+		        exit 1
+	        fi
+	    fi
     fi
 
     worktrees=($(available_worktrees))
@@ -180,14 +189,14 @@ add_action() {
     do
 	if [[ $worktree == $branch ]]; then
 	    echo "Already a worktree"
-	    read -p "What to move on that worktree? [y/N] " selected
+	    read -p "Do you want to move on that worktree? [y/N] " selected
 	    if [[ $selected == "y" ]]; then
-		move_to_worktree_window $branch
+		    move_to_worktree_window $branch
 		exit 1
 	    fi
 	    read -p "Do you want to do something else? [y/N] " selected
 	    if [[ $selected == "y" ]]; then
-		main "$@"
+		    main "$@"
 	    fi
 	    exit 1
 	fi
