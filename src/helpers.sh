@@ -15,14 +15,16 @@ get_tmux_option() {
 tmux_open_session() {
     project_name=$1
     project_path=$2
-    project_default_branch=`git branch --show-current`
     tmux has-session -t $project_name >/dev/null
 
     if [ $? != 0 ]; then
-	tmux new-session -d -s $project_name -c $project_path
+	    tmux new-session -d -s $project_name -c $project_path
         window_name="main"
-        [[ $worktree_abilitate == "true" ]] && window_name="wt1:$project_default_branch"
-	tmux rename-window -t $project_name:1 $window_name
+        (
+            cd $project_path || exit
+            [[ $worktree_abilitate == "true" ]] && window_name="wt1:`git branch --show-current`"
+	        tmux rename-window -t $project_name:1 $window_name
+        )
     fi
 
     tmux switch-client -t $project_name
