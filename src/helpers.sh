@@ -15,12 +15,13 @@ get_tmux_option() {
 tmux_open_session() {
     project_name=$1
     project_path=$2
+    project_default_branch=`git branch --show-current`
     tmux has-session -t $project_name >/dev/null
 
     if [ $? != 0 ]; then
 	tmux new-session -d -s $project_name -c $project_path
         window_name="main"
-        [[ $worktree_abilitate == "true" ]] && window_name="wt1"
+        [[ $worktree_abilitate == "true" ]] && window_name="wt1:$project_default_branch"
 	tmux rename-window -t $project_name:1 $window_name
     fi
 
@@ -56,6 +57,7 @@ select_template() {
 
 apply_template() {
     absolute_template_path=$1
+    selected_template=`basename $absolute_template_path`
     find "$absolute_template_path" -type f | while read -r file 
     do
         cat $file >> `basename $file`
