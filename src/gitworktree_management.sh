@@ -112,7 +112,7 @@ move_to_worktree_window() {
     if tmux list-windows -t "$session_name" | grep -q "$worktree_name"; then
 	    tmux select-window -t "$session_name:$worktree_name"
     else
-	    tmux new-window -n "$worktree_name" -c $absolute_path
+	    tmux new-window -n "$worktree_name:$1" -c $absolute_path
     fi
 }
 
