@@ -56,6 +56,7 @@ select_template() {
 
 apply_template() {
     absolute_template_path=$1
+    selected_template=`basename $absolute_template_path`
     find "$absolute_template_path" -type f | while read -r file 
     do
         cat $file >> `basename $file`
