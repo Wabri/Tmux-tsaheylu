@@ -26,6 +26,8 @@ Those are the steps:
 
 When a project is selected, tsaheylu create, if not already exists, a session with name `workspace/group/project` that we have selected and set the directory of the window with that path.
 
+***Note: after the issue [#41](https://github.com/Wabri/Tmux-tsaheylu/issues/41) all the path containing : will be threated as a non worktree project***
+
 ### :rocket: New Project
 
 ![new.gif](resources/new.gif)

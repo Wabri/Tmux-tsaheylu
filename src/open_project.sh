@@ -18,7 +18,12 @@ main() {
 
     # Open project
     absolute_project_path=$workspace_dir/$selected_project
-    [[ $worktree_abilitate == "true" ]] && absolute_project_path=$absolute_project_path/wt1
+    if [[ ! $absolute_project_path =~ ^.*/[^/]*:[^/]*(/.*)?$ ]] && ls $absolute_project_path | grep -q "^wt1$"; then
+        absolute_project_path=$absolute_project_path/wt1
+    fi
+    if [[ $absolute_project_path =~ ^.*/[^/]*:[^/]*(/.*)?$ ]]; then
+        selected_project=$(echo $selected_project | sed "s/:/_/g")
+    fi
     [ -z "${TMUX}" ] && tmux attach-session -t $selected_project && exit 0
     tmux_open_session $selected_project $absolute_project_path
 }
